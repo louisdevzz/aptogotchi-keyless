@@ -1,4 +1,3 @@
-import { WalletProvider } from "@/context/WalletProvider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { PropsWithChildren } from "react";
@@ -38,7 +37,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         />
       </head>
       <body className={kongtext.className}>
-        <WalletProvider>{children}</WalletProvider>
+        {children}
         <GeoTargetly />
       </body>
     </html>

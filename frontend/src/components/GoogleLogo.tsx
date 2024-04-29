@@ -6,7 +6,7 @@ function GoogleLogo() {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="mr-2 h-4 w-4"
+      className="mr-2 h-6 w-6"
     >
       <path
         fillRule="evenodd"

@@ -1,110 +1,70 @@
 "use client";
 
-import {
-  useWallet,
-  WalletReadyState,
-  Wallet,
-  isRedirectable,
-  WalletName,
-} from "@aptos-labs/wallet-adapter-react";
-import { cn } from "@/utils/styling";
+import GoogleLogo from "../GoogleLogo";
+import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 
-const buttonStyles = "nes-btn is-primary";
+const buttonStyles = "nes-btn flex items-center justify-center gap-2 py-4";
 
-export const WalletButtons = () => {
-  const { wallets, connected, disconnect, isLoading } = useWallet();
-
-  if (connected) {
-    return (
-      <div className="flex flex-row">
-        <div
-          className={cn(buttonStyles, "hover:bg-blue-700 btn-small")}
-          onClick={disconnect}
-        >
-          Disconnect
-        </div>
-      </div>
-    );
+export default function WalletButtons() {
+  if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+    throw new Error("Google Client ID is not set");
   }
 
-  if (isLoading || !wallets[0]) {
-    return (
-      <div className={cn(buttonStyles, "opacity-50 cursor-not-allowed")}>
-        Loading...
-      </div>
-    );
-  }
+  const ephemeralKeyPair = useEphemeralKeyPair();
 
-  return <WalletView wallet={wallets[0]} />;
-};
+  const redirectUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  const searchParams = new URLSearchParams({
+    /**
+     * Replace with your own client ID
+     */
+    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    /**
+     * The redirect_uri must be registered in the Google Developer Console. This callback page
+     * parses the id_token from the URL fragment and combines it with the ephemeral key pair to
+     * derive the keyless account.
+     *
+     * window.location.origin == http://localhost:3000
+     */
+    redirect_uri: `${window.location.origin}/callback`,
+    /**
+     * This uses the OpenID Connect implicit flow to return an id_token. This is recommended
+     * for SPAs (single-page applications) as it does not require a backend server.
+     */
+    response_type: "id_token",
+    scope: "openid email profile",
+    nonce: ephemeralKeyPair.nonce,
+  });
+  redirectUrl.search = searchParams.toString();
 
-const WalletView = ({ wallet }: { wallet: Wallet }) => {
-  const { connect } = useWallet();
-  const isWalletReady =
-    wallet.readyState === WalletReadyState.Installed ||
-    wallet.readyState === WalletReadyState.Loadable;
-  const mobileSupport = wallet.deeplinkProvider;
+  // if (connected) {
+  //   return (
+  //     <div className="flex flex-row">
+  //       <div
+  //         className={cn(buttonStyles, "hover:bg-blue-700 btn-small")}
+  //         onClick={disconnect}
+  //       >
+  //         Logout
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  const onWalletConnectRequest = async (walletName: WalletName) => {
-    try {
-      await connect(walletName);
-    } catch (error) {
-      console.warn(error);
-      window.alert("Failed to connect wallet");
-    }
-  };
+  // if (isLoading) {
+  //   return (
+  //     <div className={cn(buttonStyles, "opacity-50 cursor-not-allowed")}>
+  //       Loading...
+  //     </div>
+  //   );
+  // }
 
-  /**
-   * If we are on a mobile browser, adapter checks whether a wallet has a `deeplinkProvider` property
-   * a. If it does, on connect it should redirect the user to the app by using the wallet's deeplink url
-   * b. If it does not, up to the dapp to choose on the UI, but can simply disable the button
-   * c. If we are already in a in-app browser, we don't want to redirect anywhere, so connect should work as expected in the mobile app.
-   *
-   * !isWalletReady - ignore installed/sdk wallets that don't rely on window injection
-   * isRedirectable() - are we on mobile AND not in an in-app browser
-   * mobileSupport - does wallet have deeplinkProvider property? i.e does it support a mobile app
-   */
-  if (!isWalletReady && isRedirectable()) {
-    // wallet has mobile app
-    if (mobileSupport) {
-      return (
-        <button
-          className={cn(buttonStyles, "hover:bg-blue-700")}
-          disabled={false}
-          key={wallet.name}
-          onClick={() => onWalletConnectRequest(wallet.name)}
-          style={{ maxWidth: "300px" }}
-        >
-          Connect Wallet
+  return (
+    <div className="flex items-center justify-center px-4">
+      <a href={redirectUrl.toString()} className="hover:no-underline">
+        <button className={buttonStyles}>
+          <GoogleLogo />
+          Sign in with Google
         </button>
-      );
-    }
-    // wallet does not have mobile app
-    return (
-      <button
-        className={cn(buttonStyles, "opacity-50 cursor-not-allowed")}
-        disabled={true}
-        key={wallet.name}
-        style={{ maxWidth: "300px" }}
-      >
-        Connect Wallet - Desktop Only
-      </button>
-    );
-  } else {
-    // desktop
-    return (
-      <button
-        className={cn(
-          buttonStyles,
-          isWalletReady ? "hover:bg-blue-700" : "opacity-50 cursor-not-allowed"
-        )}
-        disabled={!isWalletReady}
-        key={wallet.name}
-        onClick={() => onWalletConnectRequest(wallet.name)}
-        style={{ maxWidth: "300px" }}
-      >
-        Connect Wallet
-      </button>
-    );
-  }
-};
+      </a>
+    </div>
+  );
+}

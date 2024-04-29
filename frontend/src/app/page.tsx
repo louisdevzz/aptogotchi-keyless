@@ -1,6 +1,6 @@
-import dynamic from "next/dynamic";
 import { Body } from "./home/Body";
 import { PropsWithChildren } from "react";
+import WalletButtons from "@/components/WalletButtons";
 
 const FixedSizeWrapper = ({ children }: PropsWithChildren) => {
   const fixedStyle = {
@@ -43,18 +43,3 @@ function Header() {
     </header>
   );
 }
-
-const WalletButtons = dynamic(
-  async () => {
-    const { WalletButtons } = await import("@/components/WalletButtons");
-    return { default: WalletButtons };
-  },
-  {
-    loading: () => (
-      <div className="nes-btn is-primary opacity-50 cursor-not-allowed">
-        Loading...
-      </div>
-    ),
-    ssr: false,
-  }
-);
