@@ -6,6 +6,55 @@ import { EphemeralKeyPair, Ed25519PrivateKey } from '@aptos-labs/ts-sdk';
 export type StoredEphemeralKeyPairs = { [nonce: string]: EphemeralKeyPair };
 
 /**
+ * Retrieve the ephemeral key pair with the given nonce from localStorage.
+ */
+export const getLocalEphemeralKeyPair = (
+  nonce: string,
+): EphemeralKeyPair | null => {
+  const keyPairs = getLocalEphemeralKeyPairs();
+
+  // Get the account with the given nonce (the generated nonce of the ephemeral key pair may not match
+  // the nonce in localStorage), so we need to validate it before returning it (implementation specific).
+  const ephemeralKeyPair = keyPairs[nonce];
+  if (!ephemeralKeyPair) return null;
+
+  // If the account is valid, return it, otherwise remove it from the device and return null
+  return validateEphemeralKeyPair(nonce, ephemeralKeyPair);
+};
+
+/**
+ * Validate the ephemeral key pair with the given nonce and the expiry timestamp. If the nonce does not match
+ * the generated nonce of the ephemeral key pair, the ephemeral key pair is removed from localStorage. This is
+ * to validate that the nonce algorithm is the same (e.g. if the nonce algorithm changes).
+ */
+export const validateEphemeralKeyPair = (
+  nonce: string,
+  ephemeralKeyPair: EphemeralKeyPair,
+): EphemeralKeyPair | null => {
+  // Check the nonce and the expiry timestamp of the account to see if it is valid
+  if (
+    nonce === ephemeralKeyPair.nonce &&
+    ephemeralKeyPair.expiryDateSecs > BigInt(Math.floor(Date.now() / 1000))
+  ) {
+    return ephemeralKeyPair;
+  }
+  removeEphemeralKeyPair(nonce);
+  return null;
+};
+
+/**
+ * Remove the ephemeral key pair with the given nonce from localStorage.
+ */
+export const removeEphemeralKeyPair = (nonce: string): void => {
+  const keyPairs = getLocalEphemeralKeyPairs();
+  delete keyPairs[nonce];
+  localStorage.setItem(
+    "ephemeral-key-pairs",
+    encodeEphemeralKeyPairs(keyPairs),
+  );
+};
+
+/**
  * Retrieve all ephemeral key pairs from localStorage and decode them. The new ephemeral key pair
  * is then stored in localStorage with the nonce as the key.
  */
@@ -27,7 +76,7 @@ export const storeEphemeralKeyPair = (
  * Retrieve all ephemeral key pairs from localStorage and decode them.
  */
 export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
-  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-key-pairs");
+  const rawEphemeralKeyPairs = typeof localStorage !== 'undefined' ? localStorage.getItem("ephemeral-key-pairs") : null;
   try {
     return rawEphemeralKeyPairs
       ? decodeEphemeralKeyPairs(rawEphemeralKeyPairs)
