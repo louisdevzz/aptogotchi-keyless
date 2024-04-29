@@ -1,13 +1,13 @@
 "use client";
 
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useKeylessAccount } from "@/context/KeylessAccount";
 import { Connected } from "./Connected";
 import { NotConnected } from "./NotConnected";
 
 export function Body() {
-  const { connected } = useWallet();
+  const { keylessAccount } = useKeylessAccount();
 
-  if (connected) return <Connected />;
+  if (keylessAccount) return <Connected />;
 
   return <NotConnected />;
 }

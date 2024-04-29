@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useTypingEffect } from "@/utils/useTypingEffect";
-
 import { ShufflePetImage } from "@/app/home/Pet/ShufflePetImage";
 import { DEFAULT_PET, PetParts } from "@/app/home/Pet";
 

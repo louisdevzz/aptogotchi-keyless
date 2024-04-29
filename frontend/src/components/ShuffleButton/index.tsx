@@ -8,9 +8,8 @@ export function ShuffleButton({ handleShuffle }: ShuffleButtonProps) {
   return (
     <button
       type="button"
-      className="nes-btn flex flex-row justify-center items-center"
+      className="nes-btn flex flex-row justify-center items-center gap-4"
       onClick={handleShuffle}
-      style={{ flexDirection: "row", alignItems: "center" }}
     >
       <h2 style={{ flexShrink: 0 }}>Shuffle</h2>
       <PiShuffleAngularFill

@@ -5,7 +5,7 @@ import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 import { useKeylessAccount } from "@/context/KeylessAccount";
 import { collapseAddress } from "@/utils/address";
 
-const buttonStyles = "nes-btn flex items-center justify-center gap-2 py-4";
+const buttonStyles = "nes-btn flex items-center justify-center gap-4 py-4";
 
 export default function WalletButtons() {
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
@@ -28,7 +28,10 @@ export default function WalletButtons() {
      *
      * window.location.origin == http://localhost:3000
      */
-    redirect_uri: `${window.location.origin}/callback`,
+    redirect_uri:
+      typeof window !== "undefined"
+        ? `${window.location.origin}/callback`
+        : "http://localhost:3000/callback",
     /**
      * This uses the OpenID Connect implicit flow to return an id_token. This is recommended
      * for SPAs (single-page applications) as it does not require a backend server.

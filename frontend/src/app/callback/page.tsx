@@ -4,13 +4,10 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { getLocalEphemeralKeyPair } from "@/hooks/useEphemeralKeyPair";
 import { useRouter } from "next/navigation";
-import {
-  Aptos,
-  AptosConfig,
-  Network,
-  EphemeralKeyPair,
-} from "@aptos-labs/ts-sdk";
+import { getAptosClient } from "@/utils/aptosClient";
+import { EphemeralKeyPair } from "@aptos-labs/ts-sdk";
 import { useKeylessAccount } from "@/context/KeylessAccount";
+import { toast } from "sonner";
 
 const parseJWTFromURL = (url: string): string | null => {
   const urlObject = new URL(url);
@@ -24,6 +21,7 @@ function CallbackPage() {
   const { push } = useRouter();
 
   const [progress, setProgress] = useState<number>(0);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,13 +32,15 @@ function CallbackPage() {
         }
         return currentProgress + 1;
       });
-    }, 30);
+    }, 40);
 
     async function deriveAccount() {
       const jwt = parseJWTFromURL(window.location.href);
       console.log("JWT: ", jwt);
       if (!jwt) {
+        setHasError(true);
         console.error("No JWT found in URL");
+        toast.error("No JWT found in URL. Please try logging in again.");
         return;
       }
 
@@ -53,7 +53,11 @@ function CallbackPage() {
       const ephemeralKeyPair = getLocalEphemeralKeyPair(jwtNonce);
       console.log("Ephemeral Key Pair: ", ephemeralKeyPair);
       if (!ephemeralKeyPair) {
+        setHasError(true);
         console.error("No ephemeral key pair found for the given nonce");
+        toast.error(
+          "No ephemeral key pair found for the given nonce. Please try logging in again."
+        );
         return;
       }
 
@@ -70,13 +74,18 @@ function CallbackPage() {
     jwt: string,
     ephemeralKeyPair: EphemeralKeyPair
   ) => {
-    const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET })); // Only devnet supported as of now (April 2024).
-    const keylessAccount = await aptos.deriveKeylessAccount({
+    const aptosClient = getAptosClient();
+    const keylessAccount = await aptosClient.deriveKeylessAccount({
       jwt,
       ephemeralKeyPair,
     });
 
-    console.log("Keyless Account: ", keylessAccount);
+    await aptosClient.fundAccount({
+      accountAddress: keylessAccount.accountAddress,
+      amount: 10000,
+    });
+
+    console.log("Keyless Account: ", keylessAccount.accountAddress.toString());
     setKeylessAccount(keylessAccount);
   };
 
@@ -86,7 +95,7 @@ function CallbackPage() {
         <h1>Creating your blockchain account...</h1>
         <br />
         <progress
-          className="nes-progress is-primary"
+          className={`nes-progress ${hasError ? "is-error" : "is-primary"}`}
           value={progress}
           max="100"
         ></progress>

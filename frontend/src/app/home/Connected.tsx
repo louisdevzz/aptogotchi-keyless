@@ -2,34 +2,32 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Pet } from "./Pet";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Mint } from "./Mint";
 import { NEXT_PUBLIC_CONTRACT_ADDRESS } from "@/utils/env";
 import { getAptosClient } from "@/utils/aptosClient";
-import { Modal } from "@/components/Modal";
-
-const TESTNET_ID = "2";
+import { useKeylessAccount } from "@/context/KeylessAccount";
 
 const aptosClient = getAptosClient();
 
 export function Connected() {
   const [pet, setPet] = useState<Pet>();
-  const { account, network } = useWallet();
+
+  const { keylessAccount } = useKeylessAccount();
 
   const fetchPet = useCallback(async () => {
-    if (!account?.address) return;
+    if (!keylessAccount?.accountAddress) return;
 
     const [hasPet] = await aptosClient.view({
       payload: {
         function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::has_aptogotchi`,
-        functionArguments: [account.address],
+        functionArguments: [keylessAccount.accountAddress],
       },
     });
     if (hasPet as boolean) {
       const response = await aptosClient.view({
         payload: {
           function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::get_aptogotchi`,
-          functionArguments: [account.address],
+          functionArguments: [keylessAccount.accountAddress],
         },
       });
       const [name, birthday, energyPoints, parts] = response;
@@ -41,17 +39,16 @@ export function Connected() {
         parts: typedParts,
       });
     }
-  }, [account?.address]);
+  }, [keylessAccount?.accountAddress]);
 
   useEffect(() => {
-    if (!account?.address || !network) return;
+    if (!keylessAccount?.accountAddress) return;
 
     fetchPet();
-  }, [account?.address, fetchPet, network]);
+  }, [keylessAccount?.accountAddress, fetchPet]);
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      {network?.chainId !== TESTNET_ID && <Modal />}
       {pet ? <Pet pet={pet} setPet={setPet} /> : <Mint fetchPet={fetchPet} />}
     </div>
   );

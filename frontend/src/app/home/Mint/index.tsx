@@ -4,6 +4,7 @@ import { getAptosClient } from "@/utils/aptosClient";
 import { ShufflePetImage } from "@/app/home/Pet/ShufflePetImage";
 import { DEFAULT_PET, PetParts } from "@/app/home/Pet";
 import { useKeylessAccount } from "@/context/KeylessAccount";
+import { toast } from "sonner";
 
 const aptosClient = getAptosClient();
 
@@ -12,7 +13,7 @@ export interface MintProps {
 }
 
 export function Mint({ fetchPet }: MintProps) {
-  const [newName, setNewName] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [petParts, setPetParts] = useState<PetParts>(DEFAULT_PET.parts);
   const [transactionInProgress, setTransactionInProgress] =
     useState<boolean>(false);
@@ -24,20 +25,36 @@ export function Mint({ fetchPet }: MintProps) {
 
     setTransactionInProgress(true);
 
+    const transaction = await aptosClient.transaction.build.simple({
+      sender: keylessAccount.accountAddress,
+      data: {
+        function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::create_aptogotchi`,
+        typeArguments: [],
+        functionArguments: [name, petParts.body, petParts.ear, petParts.face],
+      },
+    });
+
     try {
-      const response = await aptosClient.signAndSubmitTransaction({
+      const committedTxn = await aptosClient.signAndSubmitTransaction({
         signer: keylessAccount,
-        transaction: {
-          function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::create_aptogotchi`,
-          type_arguments: [],
-          arguments: [newName, petParts.body, petParts.ear, petParts.face],
-        },
+        transaction,
       });
       await aptosClient.waitForTransaction({
-        transactionHash: response.hash,
+        transactionHash: committedTxn.hash,
+      });
+      toast.success("Pet successfully minted!", {
+        action: {
+          label: "Explorer",
+          onClick: () =>
+            window.open(
+              `https://explorer.aptoslabs.com/txn/${committedTxn.hash}?network=devnet`,
+              "_blank"
+            ),
+        },
       });
     } catch (error: any) {
       console.error(error);
+      toast.error("Failed to mint pet. Please try again.");
     } finally {
       fetchPet();
       setTransactionInProgress(false);
@@ -53,15 +70,15 @@ export function Mint({ fetchPet }: MintProps) {
           type="text"
           id="name_field"
           className="nes-input"
-          value={newName}
-          onChange={(e) => setNewName(e.currentTarget.value)}
+          value={name}
+          onChange={(e) => setName(e.currentTarget.value)}
         />
       </div>
       <ShufflePetImage petParts={petParts} setPetParts={setPetParts} />
       <button
         type="button"
-        className={`nes-btn ${newName ? "is-success" : "is-disabled"}`}
-        disabled={!newName || transactionInProgress}
+        className={`nes-btn ${name ? "is-success" : "is-disabled"}`}
+        disabled={!name || transactionInProgress}
         onClick={handleMint}
       >
         {transactionInProgress ? "Loading..." : "Mint Pet"}
