@@ -82,7 +82,7 @@ function CallbackPage() {
 
     await aptosClient.fundAccount({
       accountAddress: keylessAccount.accountAddress,
-      amount: 10000,
+      amount: 200000000, // faucet 2 APT to create the account
     });
 
     console.log("Keyless Account: ", keylessAccount.accountAddress.toString());

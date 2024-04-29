@@ -1,7 +1,6 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState } from "react";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Pet } from ".";
 import { getAptosClient } from "@/utils/aptosClient";
 import {
@@ -10,6 +9,8 @@ import {
   NEXT_PUBLIC_ENERGY_DECREASE,
   NEXT_PUBLIC_ENERGY_INCREASE,
 } from "@/utils/env";
+import { useKeylessAccount } from "@/context/KeylessAccount";
+import { toast } from "sonner";
 
 const aptosClient = getAptosClient();
 
@@ -28,9 +29,10 @@ export function Actions({
   setPet,
   pet,
 }: ActionsProps) {
+  const { keylessAccount } = useKeylessAccount();
+
   const [transactionInProgress, setTransactionInProgress] =
     useState<boolean>(false);
-  const { account, network, signAndSubmitTransaction } = useWallet();
 
   const handleStart = () => {
     switch (selectedAction) {
@@ -44,26 +46,43 @@ export function Actions({
   };
 
   const handleFeed = async () => {
-    if (!account || !network) return;
+    if (!keylessAccount) return;
 
     setTransactionInProgress(true);
 
+    const transaction = await aptosClient.transaction.build.simple({
+      sender: keylessAccount.accountAddress,
+      data: {
+        function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::feed`,
+        typeArguments: [],
+        functionArguments: [NEXT_PUBLIC_ENERGY_INCREASE],
+      },
+    });
+
     try {
-      const response = await signAndSubmitTransaction({
-        sender: account.address,
-        data: {
-          function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::feed`,
-          typeArguments: [],
-          functionArguments: [NEXT_PUBLIC_ENERGY_INCREASE],
+      const committedTxn = await aptosClient.signAndSubmitTransaction({
+        signer: keylessAccount,
+        transaction,
+      });
+      await aptosClient.waitForTransaction({
+        transactionHash: committedTxn.hash,
+      });
+      toast.success("You successfully fed your pet!", {
+        action: {
+          label: "Explorer",
+          onClick: () =>
+            window.open(
+              `https://explorer.aptoslabs.com/txn/${committedTxn.hash}?network=testnet`,
+              "_blank"
+            ),
         },
       });
-      await aptosClient.waitForTransaction({ transactionHash: response.hash });
 
       setPet((pet) => {
-        if (!pet) return pet;
         if (
+          !pet ||
           pet.energy_points + Number(NEXT_PUBLIC_ENERGY_INCREASE) >
-          Number(NEXT_PUBLIC_ENERGY_CAP)
+            Number(NEXT_PUBLIC_ENERGY_CAP)
         )
           return pet;
 
@@ -75,32 +94,47 @@ export function Actions({
       });
     } catch (error: any) {
       console.error(error);
+      toast.error("Failed to feed your pet. Please try again.");
     } finally {
       setTransactionInProgress(false);
     }
   };
 
   const handlePlay = async () => {
-    if (!account || !network) return;
+    if (!keylessAccount) return;
 
     setTransactionInProgress(true);
 
+    const transaction = await aptosClient.transaction.build.simple({
+      sender: keylessAccount.accountAddress,
+      data: {
+        function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::play`,
+        typeArguments: [],
+        functionArguments: [NEXT_PUBLIC_ENERGY_DECREASE],
+      },
+    });
+
     try {
-      const response = await signAndSubmitTransaction({
-        sender: account.address,
-        data: {
-          function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::play`,
-          typeArguments: [],
-          functionArguments: [NEXT_PUBLIC_ENERGY_DECREASE],
-        },
+      const committedTxn = await aptosClient.signAndSubmitTransaction({
+        signer: keylessAccount,
+        transaction,
       });
       await aptosClient.waitForTransaction({
-        transactionHash: response.hash,
+        transactionHash: committedTxn.hash,
+      });
+      toast.success(`Thanks for playing with your pet, ${pet.name}!`, {
+        action: {
+          label: "Explorer",
+          onClick: () =>
+            window.open(
+              `https://explorer.aptoslabs.com/txn/${committedTxn.hash}?network=testnet`,
+              "_blank"
+            ),
+        },
       });
 
       setPet((pet) => {
-        if (!pet) return pet;
-        if (pet.energy_points <= Number(NEXT_PUBLIC_ENERGY_DECREASE))
+        if (!pet || pet.energy_points <= Number(NEXT_PUBLIC_ENERGY_DECREASE))
           return pet;
 
         return {

@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { getAptosClient } from "@/utils/aptosClient";
 import { NEXT_PUBLIC_CONTRACT_ADDRESS } from "@/utils/env";
 import { queryAptogotchiCollection } from "@/graphql/queryAptogotchiCollection";
 import { padAddressIfNeeded } from "@/utils/address";
+import { useKeylessAccount } from "@/context/KeylessAccount";
 
 const aptosClient = getAptosClient();
 
@@ -25,14 +25,14 @@ type CollectionResponse = {
 };
 
 export function useGetAptogotchiCollection() {
-  const { account } = useWallet();
+  const { keylessAccount } = useKeylessAccount();
   const [collection, setCollection] = useState<Collection>();
   const [firstFewAptogotchiName, setFirstFewAptogotchiName] =
     useState<string[]>();
   const [loading, setLoading] = useState(false);
 
   const fetchCollection = useCallback(async () => {
-    if (!account?.address) return;
+    if (!keylessAccount) return;
 
     try {
       setLoading(true);
@@ -59,7 +59,7 @@ export function useGetAptogotchiCollection() {
 
       const firstFewAptogotchi = await Promise.all(
         collectionResponse.current_collection_ownership_v2_view
-          .filter((holder) => holder.owner_address !== account.address)
+          .filter((holder) => holder.owner_address !== keylessAccount.accountAddress.toString())
           // TODO: change to limit 3 in gql after indexer fix limit
           .slice(0, 3)
           .map((holder) =>
@@ -79,7 +79,7 @@ export function useGetAptogotchiCollection() {
     } finally {
       setLoading(false);
     }
-  }, [account?.address]);
+  }, [keylessAccount]);
 
   return { collection, firstFewAptogotchiName, loading, fetchCollection };
 }

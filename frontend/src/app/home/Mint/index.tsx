@@ -42,19 +42,19 @@ export function Mint({ fetchPet }: MintProps) {
       await aptosClient.waitForTransaction({
         transactionHash: committedTxn.hash,
       });
-      toast.success("Pet successfully minted!", {
+      toast.success("Your pet was successfully minted!", {
         action: {
           label: "Explorer",
           onClick: () =>
             window.open(
-              `https://explorer.aptoslabs.com/txn/${committedTxn.hash}?network=devnet`,
+              `https://explorer.aptoslabs.com/txn/${committedTxn.hash}?network=testnet`,
               "_blank"
             ),
         },
       });
     } catch (error: any) {
       console.error(error);
-      toast.error("Failed to mint pet. Please try again.");
+      toast.error("Failed to mint your pet. Please try again.");
     } finally {
       fetchPet();
       setTransactionInProgress(false);

@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useGetAptogotchiCollection } from "@/hooks/useGetAptogotchiCollection";
+import { useKeylessAccount } from "@/context/KeylessAccount";
 
 export function AptogotchiCollection() {
-  const { account, network } = useWallet();
+  const { keylessAccount } = useKeylessAccount();
   const { collection, firstFewAptogotchiName, loading, fetchCollection } =
     useGetAptogotchiCollection();
 
   useEffect(() => {
-    if (!account?.address || !network) return;
+    if (!keylessAccount?.accountAddress) return;
     fetchCollection();
-  }, [account?.address, fetchCollection, network]);
+  }, [keylessAccount?.accountAddress, fetchCollection]);
 
   if (loading || !collection) return null;
 

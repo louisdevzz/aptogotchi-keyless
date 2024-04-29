@@ -5,7 +5,7 @@ import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 import { useKeylessAccount } from "@/context/KeylessAccount";
 import { collapseAddress } from "@/utils/address";
 
-const buttonStyles = "nes-btn flex items-center justify-center gap-4 py-4";
+const buttonStyles = "nes-btn flex items-center justify-center gap-4 py-2";
 
 export default function WalletButtons() {
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
@@ -62,7 +62,7 @@ export default function WalletButtons() {
       <a href={redirectUrl.toString()} className="hover:no-underline">
         <button className={buttonStyles}>
           <GoogleLogo />
-          Sign in with Google
+          <p>Sign in with Google</p>
         </button>
       </a>
     </div>
