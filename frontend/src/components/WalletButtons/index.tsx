@@ -2,6 +2,8 @@
 
 import GoogleLogo from "../GoogleLogo";
 import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
+import { useKeylessAccount } from "@/context/KeylessAccount";
+import { collapseAddress } from "@/utils/address";
 
 const buttonStyles = "nes-btn flex items-center justify-center gap-2 py-4";
 
@@ -10,6 +12,7 @@ export default function WalletButtons() {
     throw new Error("Google Client ID is not set");
   }
 
+  const { keylessAccount, setKeylessAccount } = useKeylessAccount();
   const ephemeralKeyPair = useEphemeralKeyPair();
 
   const redirectUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
@@ -36,26 +39,20 @@ export default function WalletButtons() {
   });
   redirectUrl.search = searchParams.toString();
 
-  // if (connected) {
-  //   return (
-  //     <div className="flex flex-row">
-  //       <div
-  //         className={cn(buttonStyles, "hover:bg-blue-700 btn-small")}
-  //         onClick={disconnect}
-  //       >
-  //         Logout
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  const disconnect = () => {
+    setKeylessAccount(null);
+  };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className={cn(buttonStyles, "opacity-50 cursor-not-allowed")}>
-  //       Loading...
-  //     </div>
-  //   );
-  // }
+  if (keylessAccount) {
+    return (
+      <div className="flex items-center justify-center px-4">
+        <button className={buttonStyles} onClick={disconnect}>
+          <GoogleLogo />
+          {collapseAddress(keylessAccount.accountAddress.toString())}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center px-4">

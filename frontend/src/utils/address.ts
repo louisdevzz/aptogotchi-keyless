@@ -8,3 +8,7 @@ export function padAddressIfNeeded(address: string) {
   const padding = "0".repeat(paddingNeeded);
   return `0x${padding}${address.slice(2)}`;
 }
+
+export const collapseAddress = (address: string): string => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};  

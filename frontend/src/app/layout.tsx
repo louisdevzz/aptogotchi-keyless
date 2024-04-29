@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { PropsWithChildren } from "react";
 import { GeoTargetly } from "@/utils/GeoTargetly";
+import { KeylessAccountProvider } from "@/context/KeylessAccount";
 import "nes.css/css/nes.min.css";
 import "./globals.css";
 
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         />
       </head>
       <body className={kongtext.className}>
-        {children}
+        <KeylessAccountProvider>{children}</KeylessAccountProvider>
         <GeoTargetly />
       </body>
     </html>

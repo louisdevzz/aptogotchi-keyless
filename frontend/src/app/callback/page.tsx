@@ -10,6 +10,7 @@ import {
   Network,
   EphemeralKeyPair,
 } from "@aptos-labs/ts-sdk";
+import { useKeylessAccount } from "@/context/KeylessAccount";
 
 const parseJWTFromURL = (url: string): string | null => {
   const urlObject = new URL(url);
@@ -19,8 +20,10 @@ const parseJWTFromURL = (url: string): string | null => {
 };
 
 function CallbackPage() {
-  const [progress, setProgress] = useState<number>(0);
+  const { setKeylessAccount } = useKeylessAccount();
   const { push } = useRouter();
+
+  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,6 +60,7 @@ function CallbackPage() {
       await createKeylessAccount(jwt, ephemeralKeyPair);
       clearInterval(interval);
       setProgress(100);
+      push("/");
     }
 
     deriveAccount();
@@ -73,12 +77,13 @@ function CallbackPage() {
     });
 
     console.log("Keyless Account: ", keylessAccount);
+    setKeylessAccount(keylessAccount);
   };
 
   return (
     <div className="flex items-center justify-center h-screen w-screen">
       <div className="nes-container is-rounded shadow-md cursor-not-allowed bg-gray-200">
-        <h1>Redirecting...</h1>
+        <h1>Creating your blockchain account...</h1>
         <br />
         <progress
           className="nes-progress is-primary"
