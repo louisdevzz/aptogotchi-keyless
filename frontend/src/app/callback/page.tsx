@@ -92,7 +92,7 @@ function CallbackPage() {
   return (
     <div className="flex items-center justify-center h-screen w-screen">
       <div className="nes-container is-rounded shadow-md cursor-not-allowed bg-gray-200">
-        <h1>Creating your blockchain account...</h1>
+        <h1>Loading your blockchain account...</h1>
         <br />
         <progress
           className={`nes-progress ${hasError ? "is-error" : "is-primary"}`}

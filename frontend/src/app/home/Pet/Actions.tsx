@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 const aptosClient = getAptosClient();
 
-export type PetAction = "feed" | "play";
+export type PetAction = "feed" | "play" | "delete";
 
 export interface ActionsProps {
   pet: Pet;
@@ -41,6 +41,9 @@ export function Actions({
         break;
       case "play":
         handlePlay();
+        break;
+      case "delete":
+        handleDelete();
         break;
     }
   };
@@ -150,6 +153,48 @@ export function Actions({
     }
   };
 
+  const handleDelete = async () => {
+    if (!keylessAccount) return;
+
+    setTransactionInProgress(true);
+
+    const transaction = await aptosClient.transaction.build.simple({
+      sender: keylessAccount.accountAddress,
+      data: {
+        function: `${NEXT_PUBLIC_CONTRACT_ADDRESS}::main::delete`,
+        typeArguments: [],
+        functionArguments: [],
+      },
+    });
+
+    try {
+      const committedTxn = await aptosClient.signAndSubmitTransaction({
+        signer: keylessAccount,
+        transaction,
+      });
+      await aptosClient.waitForTransaction({
+        transactionHash: committedTxn.hash,
+      });
+      toast.success("Pet was successfully deleted.", {
+        action: {
+          label: "Explorer",
+          onClick: () =>
+            window.open(
+              `https://explorer.aptoslabs.com/txn/${committedTxn.hash}?network=testnet`,
+              "_blank"
+            ),
+        },
+      });
+
+      setPet(undefined);
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to delete your pet. Please try again.");
+    } finally {
+      setTransactionInProgress(false);
+    }
+  };
+
   const feedDisabled =
     selectedAction === "feed" &&
     pet.energy_points === Number(NEXT_PUBLIC_ENERGY_CAP);
@@ -181,6 +226,16 @@ export function Actions({
             />
             <span>Feed</span>
           </label>
+          <label>
+            <input
+              type="radio"
+              className="nes-radio"
+              name="action"
+              checked={selectedAction === "delete"}
+              onChange={() => setSelectedAction("delete")}
+            />
+            <span>Delete</span>
+          </label>
         </div>
         <div className="flex flex-col gap-4 justify-between">
           <p>{actionDescriptions[selectedAction]}</p>
@@ -201,6 +256,7 @@ export function Actions({
 }
 
 const actionDescriptions: Record<PetAction, string> = {
-  feed: "Feeding your pet will boost its Energy Points...",
-  play: "Playing with your pet will make it happy and consume its Energy Points...",
+  feed: "🍔 Feeding your pet will boost its Energy Points...",
+  play: "😀 Playing with your pet will make it happy and consume its Energy Points...",
+  delete: "😢 Delete your pet... (only used for testing purposes)",
 };
