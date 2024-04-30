@@ -29,7 +29,9 @@ export default function WalletButtons() {
     redirect_uri:
       typeof window !== "undefined"
         ? `${window.location.origin}/callback`
-        : "http://localhost:3000/callback",
+        : (process.env.NODE_ENV === "development"
+            ? "http://localhost:3000"
+            : process.env.NEXT_PUBLIC_VERCEL_URL) + "/callback",
     /**
      * This uses the OpenID Connect implicit flow to return an id_token. This is recommended
      * for SPAs (single-page applications) as it does not require a backend server.
