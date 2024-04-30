@@ -1,12 +1,10 @@
-# Aptogotchi (Beginner)
-Aptogotchi is a simple and fun full-stack, end-to-end dApp demonstrating the basics of how to build a dApp using Move. 
+# Aptogotchi (Keyless Integration)
+Aptogotchi is a simple and fun full-stack, end-to-end dApp demonstrating the basics of how to build a dApp using Move.
 
 We introduce the following concepts:
-1. how to create a full-stack dApp 
-2. how to connect to smart contracts on the Aptos blockchain
-2. how to integrate with Petra Wallet/Explorer/ANS and other services.
-2. how to create events and use indexer to get off-chain data.
-3. how to write unit tests for the smart contracts.
+1. how to connect an OIDC provider (in this case Google) as a wallet login option
+2. how to connect and use a Web2 account to interact with smart contracts on the Aptos blockchain
+3. how to sign & submit transactions without requiring user signatures for each txn
 
 This dApp will be used as an educational demo hosted on [Aptos Learn](https://learn.aptoslabs.com/).
 
@@ -18,13 +16,15 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, install all project dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+
+Then, you can run the development server:
+
+```bash
 pnpm dev
 ```
 
