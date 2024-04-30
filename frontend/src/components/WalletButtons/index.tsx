@@ -26,7 +26,10 @@ export default function WalletButtons() {
      * parses the id_token from the URL fragment and combines it with the ephemeral key pair to
      * derive the keyless account.
      */
-    redirect_uri: "http://localhost:3000/callback",
+    redirect_uri:
+      typeof window !== "undefined"
+        ? `${window.location.origin}/callback`
+        : "http://localhost:3000/callback",
     /**
      * This uses the OpenID Connect implicit flow to return an id_token. This is recommended
      * for SPAs (single-page applications) as it does not require a backend server.
