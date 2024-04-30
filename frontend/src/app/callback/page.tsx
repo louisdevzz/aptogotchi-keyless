@@ -32,14 +32,13 @@ function CallbackPage() {
         }
         return currentProgress + 1;
       });
-    }, 40);
+    }, 50);
 
     async function deriveAccount() {
       const jwt = parseJWTFromURL(window.location.href);
       console.log("JWT: ", jwt);
       if (!jwt) {
         setHasError(true);
-        console.error("No JWT found in URL");
         toast.error("No JWT found in URL. Please try logging in again.");
         return;
       }
@@ -54,7 +53,6 @@ function CallbackPage() {
       console.log("Ephemeral Key Pair: ", ephemeralKeyPair);
       if (!ephemeralKeyPair) {
         setHasError(true);
-        console.error("No ephemeral key pair found for the given nonce");
         toast.error(
           "No ephemeral key pair found for the given nonce. Please try logging in again."
         );

@@ -18,7 +18,7 @@ export interface PetDetailsProps {
 const aptosClient = getAptosClient();
 
 export function PetDetails({ pet, setPet }: PetDetailsProps) {
-  const [newName, setNewName] = useState(pet.name);
+  const [newName, setNewName] = useState<string>(pet.name);
   const [transactionInProgress, setTransactionInProgress] =
     useState<boolean>(false);
 
@@ -78,9 +78,11 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
     navigator.clipboard.writeText(owner);
   };
 
-  const nameFieldComponent = (
+  const nameField = (
     <div className="nes-field">
-      <label htmlFor="name_field">Name</label>
+      <label htmlFor="name_field">
+        {transactionInProgress ? "Loading..." : "Name"}
+      </label>
       <div className="relative">
         <input
           type="text"
@@ -91,16 +93,16 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         />
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 nes-pointer disabled:cursor-not-allowed text-sky-500 disabled:text-gray-400"
-          disabled={newName !== pet.name}
+          disabled={newName === pet.name || transactionInProgress}
           onClick={handleNameChange}
         >
-          <AiFillSave className=" h-8 w-8 drop-shadow-sm" />
+          <AiFillSave className="h-8 w-8 drop-shadow-sm" />
         </button>
       </div>
     </div>
   );
 
-  const ownerFieldComponent = (
+  const ownerField = (
     <div className="nes-field">
       <label htmlFor="owner_field">Owner</label>
       <div className="relative">
@@ -113,6 +115,7 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         />
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 nes-pointer disabled:cursor-not-allowed text-gray-400 disabled:text-gray-400"
+          disabled={!owner}
           onClick={handleCopy}
         >
           <FaCopy className="h-8 w-8 drop-shadow-sm" />
@@ -132,9 +135,8 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         />
       </div>
       <div className="flex flex-col gap-2">
-        {nameFieldComponent}
-        {ownerFieldComponent}
-        <br />
+        {nameField}
+        {ownerField}
       </div>
     </div>
   );

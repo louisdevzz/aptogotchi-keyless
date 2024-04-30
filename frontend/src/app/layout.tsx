@@ -39,7 +39,16 @@ export default function RootLayout({ children }: PropsWithChildren) {
         />
       </head>
       <body className={kongtext.className}>
-        <Toaster richColors position="top-right" />
+        <Toaster
+          richColors
+          position="top-right"
+          toastOptions={{
+            style: {
+              letterSpacing: "0.05em",
+            },
+            className: "my-toast",
+          }}
+        />
         <KeylessAccountProvider>{children}</KeylessAccountProvider>
         <GeoTargetly />
       </body>

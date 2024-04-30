@@ -5,11 +5,11 @@ import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 import { useKeylessAccount } from "@/context/KeylessAccount";
 import { collapseAddress } from "@/utils/address";
 
-const buttonStyles = "nes-btn flex items-center justify-center gap-4 py-2";
+const buttonStyles = "flex items-center justify-center gap-4 py-2 nes-btn";
 
 export default function WalletButtons() {
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
-    throw new Error("Google Client ID is not set");
+    throw new Error("Google Client ID is not set in env");
   }
 
   const { keylessAccount, setKeylessAccount } = useKeylessAccount();
@@ -25,13 +25,8 @@ export default function WalletButtons() {
      * The redirect_uri must be registered in the Google Developer Console. This callback page
      * parses the id_token from the URL fragment and combines it with the ephemeral key pair to
      * derive the keyless account.
-     *
-     * window.location.origin == http://localhost:3000
      */
-    redirect_uri:
-      typeof window !== "undefined"
-        ? `${window.location.origin}/callback`
-        : "http://localhost:3000/callback",
+    redirect_uri: "http://localhost:3000/callback",
     /**
      * This uses the OpenID Connect implicit flow to return an id_token. This is recommended
      * for SPAs (single-page applications) as it does not require a backend server.
@@ -51,7 +46,9 @@ export default function WalletButtons() {
       <div className="flex items-center justify-center px-4">
         <button className={buttonStyles} onClick={disconnect}>
           <GoogleLogo />
-          {collapseAddress(keylessAccount.accountAddress.toString())}
+          <span title={keylessAccount.accountAddress.toString()}>
+            {collapseAddress(keylessAccount.accountAddress.toString())}
+          </span>
         </button>
       </div>
     );

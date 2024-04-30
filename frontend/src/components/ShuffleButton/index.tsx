@@ -8,7 +8,7 @@ export function ShuffleButton({ handleShuffle }: ShuffleButtonProps) {
   return (
     <button
       type="button"
-      className="nes-btn flex flex-row justify-center items-center gap-4"
+      className="flex flex-row justify-center items-center gap-4 nes-btn"
       onClick={handleShuffle}
     >
       <h2 style={{ flexShrink: 0 }}>Shuffle</h2>

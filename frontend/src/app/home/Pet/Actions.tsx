@@ -148,6 +148,7 @@ export function Actions({
       });
     } catch (error: any) {
       console.error(error);
+      toast.error("Failed to play with your pet. Please try again.");
     } finally {
       setTransactionInProgress(false);
     }
