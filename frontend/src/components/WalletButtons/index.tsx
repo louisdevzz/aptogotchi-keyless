@@ -5,7 +5,7 @@ import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 import { useKeylessAccount } from "@/context/KeylessAccount";
 import { collapseAddress } from "@/utils/address";
 
-const buttonStyles = "flex items-center justify-center gap-4 py-2 nes-btn";
+const buttonStyles = "flex items-center justify-center md:gap-4 py-2 nes-btn";
 
 export default function WalletButtons() {
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
@@ -49,7 +49,11 @@ export default function WalletButtons() {
   if (keylessAccount) {
     return (
       <div className="flex items-center justify-center px-4">
-        <button className={buttonStyles} onClick={disconnect}>
+        <button
+          className={buttonStyles}
+          onClick={disconnect}
+          title="Disconnect Wallet"
+        >
           <GoogleLogo />
           <span title={keylessAccount.accountAddress.toString()}>
             {collapseAddress(keylessAccount.accountAddress.toString())}

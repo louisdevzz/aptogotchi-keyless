@@ -1,7 +1,7 @@
 "use client";
 
 import { AiFillSave } from "react-icons/ai";
-import { FaCopy } from "react-icons/fa";
+import { FaCopy, FaExternalLinkAlt } from "react-icons/fa";
 import { HealthBar } from "@/components/HealthBar";
 import { Pet } from ".";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -104,7 +104,14 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
 
   const ownerField = (
     <div className="nes-field">
-      <label htmlFor="owner_field">Owner</label>
+      <a
+        className="flex items-center gap-2"
+        href={`https://explorer.aptoslabs.com/account/${owner}?network=testnet`}
+        target="_blank"
+      >
+        <label htmlFor="owner_field">Owner</label>
+        <FaExternalLinkAlt className="h-4 w-4 drop-shadow-sm" />
+      </a>
       <div className="relative">
         <input
           type="text"
