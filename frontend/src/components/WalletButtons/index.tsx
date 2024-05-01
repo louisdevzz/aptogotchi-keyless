@@ -5,7 +5,8 @@ import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 import { useKeylessAccount } from "@/context/KeylessAccount";
 import { collapseAddress } from "@/utils/address";
 
-const buttonStyles = "flex items-center justify-center md:gap-4 py-2 nes-btn";
+const buttonStyles =
+  "nes-btn flex items-center justify-center md:gap-4 py-2 flex-nowrap whitespace-nowrap";
 
 export default function WalletButtons() {
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {

@@ -1,4 +1,4 @@
-import { EphemeralKeyPair, Ed25519PrivateKey } from '@aptos-labs/ts-sdk';
+import { EphemeralKeyPair } from '@aptos-labs/ts-sdk';
 
 /**
  * Stored ephemeral key pairs in localStorage (nonce -> ephemeralKeyPair)
@@ -98,7 +98,7 @@ export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
  */
 const EphemeralKeyPairEncoding = {
   decode: (e: any) => EphemeralKeyPair.fromBytes(e.data),
-  encode: (e: EphemeralKeyPair) => ({ __type: 'EphemeralKeyPair', data: e.bcsToBytes() }), 
+  encode: (e: EphemeralKeyPair) => ({ __type: 'EphemeralKeyPair', data: e.bcsToBytes() }),
 };
 
 /**
@@ -109,6 +109,8 @@ export const encodeEphemeralKeyPairs = (
 ): string =>
   JSON.stringify(keyPairs, (_, e) => {
     if (typeof e === "bigint") return { __type: "bigint", value: e.toString() };
+    if (e instanceof Uint8Array)
+      return { __type: "Uint8Array", value: Array.from(e) };
     if (e instanceof EphemeralKeyPair)
       return EphemeralKeyPairEncoding.encode(e);
     return e;
@@ -122,6 +124,7 @@ export const decodeEphemeralKeyPairs = (
 ): StoredEphemeralKeyPairs =>
   JSON.parse(encodedEphemeralKeyPairs, (_, e) => {
     if (e && e.__type === "bigint") return BigInt(e.value);
+    if (e && e.__type === "Uint8Array") return new Uint8Array(e.value);
     if (e && e.__type === "EphemeralKeyPair")
       return EphemeralKeyPairEncoding.decode(e);
     return e;

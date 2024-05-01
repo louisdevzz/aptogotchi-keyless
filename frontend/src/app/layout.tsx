@@ -46,7 +46,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             style: {
               letterSpacing: "0.05em",
             },
-            className: "my-toast",
+            className: "toast",
           }}
         />
         <KeylessAccountProvider>{children}</KeylessAccountProvider>

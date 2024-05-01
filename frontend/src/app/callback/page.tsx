@@ -37,8 +37,10 @@ function CallbackPage() {
     async function deriveAccount() {
       const jwt = parseJWTFromURL(window.location.href);
       console.log("JWT: ", jwt);
+
       if (!jwt) {
         setHasError(true);
+        setProgress(100);
         toast.error("No JWT found in URL. Please try logging in again.");
         return;
       }
@@ -51,8 +53,10 @@ function CallbackPage() {
 
       const ephemeralKeyPair = getLocalEphemeralKeyPair(jwtNonce);
       console.log("Ephemeral Key Pair: ", ephemeralKeyPair);
+
       if (!ephemeralKeyPair) {
         setHasError(true);
+        setProgress(100);
         toast.error(
           "No ephemeral key pair found for the given nonce. Please try logging in again."
         );
