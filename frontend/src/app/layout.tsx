@@ -47,8 +47,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
               letterSpacing: "0.05em",
             },
             className: "toast",
+            duration: 5000,
           }}
           closeButton
+          expand={true}
         />
         <KeylessAccountProvider>{children}</KeylessAccountProvider>
         <GeoTargetly />

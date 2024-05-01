@@ -82,10 +82,17 @@ function CallbackPage() {
       ephemeralKeyPair,
     });
 
-    await aptosClient.fundAccount({
-      accountAddress: keylessAccount.accountAddress,
-      amount: 200000000, // faucet 2 APT to create the account
-    });
+    try {
+      await aptosClient.fundAccount({
+        accountAddress: keylessAccount.accountAddress,
+        amount: 200000000, // faucet 2 APT to create the account
+      });
+    } catch (error) {
+      console.log("Error funding account: ", error);
+      toast.error(
+        "Failed to fund account. Please try logging in again or use another account."
+      );
+    }
 
     console.log("Keyless Account: ", keylessAccount.accountAddress.toString());
     setKeylessAccount(keylessAccount);

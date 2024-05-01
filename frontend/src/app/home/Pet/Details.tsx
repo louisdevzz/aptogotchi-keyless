@@ -83,11 +83,11 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
       <label htmlFor="name_field">
         {transactionInProgress ? "Loading..." : "Name"}
       </label>
-      <div className="relative">
+      <div className="relative mt-4">
         <input
           type="text"
           id="name_field"
-          className="nes-input"
+          className="nes-input pr-14"
           value={newName}
           onChange={(e) => setNewName(e.currentTarget.value)}
         />
@@ -109,14 +109,16 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         href={`https://explorer.aptoslabs.com/account/${owner}?network=testnet`}
         target="_blank"
       >
-        <label htmlFor="owner_field">Owner</label>
+        <label htmlFor="owner_field" className="mb-0">
+          Owner
+        </label>
         <FaExternalLinkAlt className="h-4 w-4 drop-shadow-sm" />
       </a>
-      <div className="relative">
+      <div className="relative mt-4">
         <input
           type="text"
           id="owner_field"
-          className="nes-input pr-12"
+          className="nes-input pr-14"
           disabled
           value={owner}
         />
