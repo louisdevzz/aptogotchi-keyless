@@ -227,7 +227,7 @@ export function Actions({
             />
             <span>Feed</span>
           </label>
-          <label>
+          {/* <label>
             <input
               type="radio"
               className="nes-radio"
@@ -236,7 +236,7 @@ export function Actions({
               onChange={() => setSelectedAction("delete")}
             />
             <span>Delete</span>
-          </label>
+          </label> */}
         </div>
         <div className="flex flex-col gap-4 justify-between">
           <p>{actionDescriptions[selectedAction]}</p>
