@@ -97,18 +97,8 @@ export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
  * Encoding for the EphemeralKeyPair class to be stored in localStorage
  */
 const EphemeralKeyPairEncoding = {
-  decode: (e: any) =>
-    new EphemeralKeyPair({
-      blinder: new Uint8Array(e.blinder),
-      expiryDateSecs: BigInt(e.expiryDateSecs),
-      privateKey: new Ed25519PrivateKey(e.privateKey),
-    }),
-  encode: (e: EphemeralKeyPair) => ({
-    __type: "EphemeralKeyPair",
-    blinder: Array.from(e.blinder),
-    expiryDateSecs: e.expiryDateSecs.toString(),
-    privateKey: e.privateKey.toString(),
-  }),
+  decode: (e: any) => EphemeralKeyPair.fromBytes(e.data),
+  encode: (e: EphemeralKeyPair) => ({ __type: 'EphemeralKeyPair', data: e.bcsToBytes() }), 
 };
 
 /**
