@@ -45,7 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           position="top-right"
           toastOptions={{
             style: {
-              letterSpacing: "0.05em",
+              letterSpacing: "0.02em",
             },
             className: "toast",
             duration: 5000,
