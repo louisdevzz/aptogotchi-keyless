@@ -36,7 +36,6 @@ function CallbackPage() {
 
     async function deriveAccount() {
       const jwt = parseJWTFromURL(window.location.href);
-      console.log("JWT: ", jwt);
 
       if (!jwt) {
         setHasError(true);
@@ -46,13 +45,10 @@ function CallbackPage() {
       }
 
       const payload = jwtDecode<{ nonce: string }>(jwt);
-      console.log("JWT Payload: ", payload);
 
       const jwtNonce = payload.nonce;
-      console.log("JWT Nonce: ", jwtNonce);
 
       const ephemeralKeyPair = getLocalEphemeralKeyPair(jwtNonce);
-      console.log("Ephemeral Key Pair: ", ephemeralKeyPair);
 
       if (!ephemeralKeyPair) {
         setHasError(true);
@@ -82,16 +78,22 @@ function CallbackPage() {
       ephemeralKeyPair,
     });
 
-    try {
-      await aptosClient.fundAccount({
-        accountAddress: keylessAccount.accountAddress,
-        amount: 200000000, // faucet 2 APT to create the account
-      });
-    } catch (error) {
-      console.log("Error funding account: ", error);
-      toast.error(
-        "Failed to fund account. Please try logging in again or use another account."
-      );
+    const accountCoinsData = await aptosClient.getAccountCoinsData({
+      accountAddress: keylessAccount?.accountAddress.toString(),
+    });
+    // account does not exist yet -> fund it
+    if (accountCoinsData.length === 0) {
+      try {
+        await aptosClient.fundAccount({
+          accountAddress: keylessAccount.accountAddress,
+          amount: 200000000, // faucet 2 APT to create the account
+        });
+      } catch (error) {
+        console.log("Error funding account: ", error);
+        toast.error(
+          "Failed to fund account. Please try logging in again or use another account."
+        );
+      }
     }
 
     console.log("Keyless Account: ", keylessAccount.accountAddress.toString());
