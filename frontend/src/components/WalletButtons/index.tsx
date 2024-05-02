@@ -4,6 +4,7 @@ import GoogleLogo from "../GoogleLogo";
 import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
 import { useKeylessAccount } from "@/context/KeylessAccount";
 import { collapseAddress } from "@/utils/address";
+import { toast } from "sonner";
 
 const buttonStyles =
   "nes-btn flex items-center justify-center md:gap-4 py-2 flex-nowrap whitespace-nowrap";
@@ -45,6 +46,7 @@ export default function WalletButtons() {
 
   const disconnect = () => {
     setKeylessAccount(null);
+    toast.success("Successfully disconnected account");
   };
 
   if (keylessAccount) {
