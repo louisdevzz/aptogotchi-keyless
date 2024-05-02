@@ -6,7 +6,7 @@ import { getLocalEphemeralKeyPair } from "@/hooks/useEphemeralKeyPair";
 import { useRouter } from "next/navigation";
 import { getAptosClient } from "@/utils/aptosClient";
 import { EphemeralKeyPair } from "@aptos-labs/ts-sdk";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 import { toast } from "sonner";
 
 const parseJWTFromURL = (url: string): string | null => {

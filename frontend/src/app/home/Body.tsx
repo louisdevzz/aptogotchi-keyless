@@ -1,6 +1,6 @@
 "use client";
 
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 import { Connected } from "./Connected";
 import { NotConnected } from "./NotConnected";
 

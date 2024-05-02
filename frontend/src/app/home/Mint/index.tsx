@@ -3,7 +3,7 @@ import { NEXT_PUBLIC_CONTRACT_ADDRESS } from "@/utils/env";
 import { getAptosClient } from "@/utils/aptosClient";
 import { ShufflePetImage } from "@/app/home/Pet/ShufflePetImage";
 import { DEFAULT_PET, PetParts } from "@/app/home/Pet";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 import { toast } from "sonner";
 
 const aptosClient = getAptosClient();

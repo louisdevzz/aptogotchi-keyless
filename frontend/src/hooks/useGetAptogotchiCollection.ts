@@ -3,7 +3,7 @@ import { getAptosClient } from "@/utils/aptosClient";
 import { NEXT_PUBLIC_CONTRACT_ADDRESS } from "@/utils/env";
 import { queryAptogotchiCollection } from "@/graphql/queryAptogotchiCollection";
 import { padAddressIfNeeded } from "@/utils/address";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 
 const aptosClient = getAptosClient();
 

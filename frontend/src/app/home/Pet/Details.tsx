@@ -3,26 +3,22 @@
 import { AiFillSave } from "react-icons/ai";
 import { FaCopy, FaExternalLinkAlt } from "react-icons/fa";
 import { HealthBar } from "@/components/HealthBar";
-import { Pet } from ".";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { NEXT_PUBLIC_CONTRACT_ADDRESS } from "@/utils/env";
 import { getAptosClient } from "@/utils/aptosClient";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 import { toast } from "sonner";
-
-export interface PetDetailsProps {
-  pet: Pet;
-  setPet: Dispatch<SetStateAction<Pet | undefined>>;
-}
+import { usePet } from "@/context/PetContext";
 
 const aptosClient = getAptosClient();
 
-export function PetDetails({ pet, setPet }: PetDetailsProps) {
-  const [newName, setNewName] = useState<string>(pet.name);
+export function Details() {
+  const { pet, setPet } = usePet();
+  const { keylessAccount } = useKeylessAccount();
+
+  const [newName, setNewName] = useState<string>(pet?.name || "");
   const [transactionInProgress, setTransactionInProgress] =
     useState<boolean>(false);
-
-  const { keylessAccount } = useKeylessAccount();
 
   const owner = keylessAccount?.accountAddress.toString() || "";
 
@@ -49,7 +45,7 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         transactionHash: committedTxn.hash,
       });
       toast.success(
-        `Successfully renamed your pet from ${pet.name} to ${newName}!`,
+        `Successfully renamed your pet from ${pet?.name} to ${newName}!`,
         {
           action: {
             label: "Explorer",
@@ -93,7 +89,7 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         />
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 nes-pointer disabled:cursor-not-allowed text-sky-500 disabled:text-gray-400"
-          disabled={newName === pet.name || transactionInProgress}
+          disabled={newName === pet?.name || transactionInProgress}
           onClick={handleNameChange}
         >
           <AiFillSave className="h-8 w-8 drop-shadow-sm" />
@@ -139,7 +135,7 @@ export function PetDetails({ pet, setPet }: PetDetailsProps) {
         <label>Energy Points</label>
         <HealthBar
           totalHealth={10}
-          currentHealth={pet.energy_points}
+          currentHealth={pet?.energy_points || 0}
           icon="star"
         />
       </div>

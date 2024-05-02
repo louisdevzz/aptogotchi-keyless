@@ -2,7 +2,7 @@
 
 import GoogleLogo from "../GoogleLogo";
 import useEphemeralKeyPair from "@/hooks/useEphemeralKeyPair";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 import { collapseAddress } from "@/utils/address";
 import { toast } from "sonner";
 

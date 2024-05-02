@@ -1,11 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { Actions, PetAction } from "./Actions";
-import { PetDetails } from "./Details";
+import { Details } from "./Details";
 import { PetImage } from "./Image";
 import { Summary } from "./Summary";
 import { AptogotchiCollection } from "@/components/AptogotchiCollection";
+import { usePet } from "@/context/PetContext";
 
 export interface Pet {
   name: string;
@@ -30,12 +31,8 @@ export const DEFAULT_PET = {
   },
 };
 
-interface PetProps {
-  pet: Pet;
-  setPet: Dispatch<SetStateAction<Pet | undefined>>;
-}
-
-export function Pet({ pet, setPet }: PetProps) {
+export function Pet() {
+  const { pet, setPet } = usePet();
   const [selectedAction, setSelectedAction] = useState<PetAction>("play");
 
   return (
@@ -44,19 +41,17 @@ export function Pet({ pet, setPet }: PetProps) {
         <div className="flex flex-col gap-4 w-[360px]">
           <PetImage
             selectedAction={selectedAction}
-            petParts={pet.parts}
+            petParts={pet?.parts}
             avatarStyle
           />
-          <PetDetails pet={pet} setPet={setPet} />
+          <Details />
         </div>
         <div className="flex flex-col gap-8 w-[680px] h-full">
           <Actions
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
-            setPet={setPet}
-            pet={pet}
           />
-          <Summary pet={pet} />
+          <Summary />
         </div>
       </div>
       <AptogotchiCollection />

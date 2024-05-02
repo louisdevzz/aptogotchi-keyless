@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useGetAptogotchiCollection } from "@/hooks/useGetAptogotchiCollection";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 
 export function AptogotchiCollection() {
   const { keylessAccount } = useKeylessAccount();

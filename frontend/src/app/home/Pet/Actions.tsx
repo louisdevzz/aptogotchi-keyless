@@ -1,7 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
-import { Pet } from ".";
+import { useState } from "react";
 import { getAptosClient } from "@/utils/aptosClient";
 import {
   NEXT_PUBLIC_CONTRACT_ADDRESS,
@@ -9,27 +8,22 @@ import {
   NEXT_PUBLIC_ENERGY_DECREASE,
   NEXT_PUBLIC_ENERGY_INCREASE,
 } from "@/utils/env";
-import { useKeylessAccount } from "@/context/KeylessAccount";
+import { useKeylessAccount } from "@/context/KeylessAccountContext";
 import { toast } from "sonner";
+import { usePet } from "@/context/PetContext";
 
 const aptosClient = getAptosClient();
 
 export type PetAction = "feed" | "play" | "delete";
 
 export interface ActionsProps {
-  pet: Pet;
   selectedAction: PetAction;
   setSelectedAction: (action: PetAction) => void;
-  setPet: Dispatch<SetStateAction<Pet | undefined>>;
 }
 
-export function Actions({
-  selectedAction,
-  setSelectedAction,
-  setPet,
-  pet,
-}: ActionsProps) {
+export function Actions({ selectedAction, setSelectedAction }: ActionsProps) {
   const { keylessAccount } = useKeylessAccount();
+  const { pet, setPet } = usePet();
 
   const [transactionInProgress, setTransactionInProgress] =
     useState<boolean>(false);
@@ -81,18 +75,18 @@ export function Actions({
         },
       });
 
-      setPet((pet) => {
-        if (
-          !pet ||
-          pet.energy_points + Number(NEXT_PUBLIC_ENERGY_INCREASE) >
-            Number(NEXT_PUBLIC_ENERGY_CAP)
-        )
-          return pet;
+      setPet((prevPet) => {
+        if (!prevPet) return prevPet;
+
+        const newEnergyPoints =
+          prevPet.energy_points + Number(NEXT_PUBLIC_ENERGY_INCREASE);
+        if (newEnergyPoints > Number(NEXT_PUBLIC_ENERGY_CAP)) {
+          return { ...prevPet };
+        }
 
         return {
-          ...pet,
-          energy_points:
-            pet.energy_points + Number(NEXT_PUBLIC_ENERGY_INCREASE),
+          ...prevPet,
+          energy_points: newEnergyPoints,
         };
       });
     } catch (error: any) {
@@ -125,7 +119,7 @@ export function Actions({
       await aptosClient.waitForTransaction({
         transactionHash: committedTxn.hash,
       });
-      toast.success(`Thanks for playing with your pet, ${pet.name}!`, {
+      toast.success(`Thanks for playing with your pet, ${pet?.name}!`, {
         action: {
           label: "Explorer",
           onClick: () =>
@@ -136,14 +130,18 @@ export function Actions({
         },
       });
 
-      setPet((pet) => {
-        if (!pet || pet.energy_points <= Number(NEXT_PUBLIC_ENERGY_DECREASE))
-          return pet;
+      setPet((prevPet) => {
+        if (!prevPet) return prevPet;
+
+        const newEnergyPoints =
+          prevPet.energy_points - Number(NEXT_PUBLIC_ENERGY_DECREASE);
+        if (newEnergyPoints < 0) {
+          return { ...prevPet };
+        }
 
         return {
-          ...pet,
-          energy_points:
-            pet.energy_points - Number(NEXT_PUBLIC_ENERGY_DECREASE),
+          ...prevPet,
+          energy_points: newEnergyPoints,
         };
       });
     } catch (error: any) {
@@ -198,9 +196,9 @@ export function Actions({
 
   const feedDisabled =
     selectedAction === "feed" &&
-    pet.energy_points === Number(NEXT_PUBLIC_ENERGY_CAP);
+    pet?.energy_points === Number(NEXT_PUBLIC_ENERGY_CAP);
   const playDisabled =
-    selectedAction === "play" && pet.energy_points === Number(0);
+    selectedAction === "play" && pet?.energy_points === Number(0);
 
   return (
     <div className="nes-container with-title flex-1 bg-white h-[320px]">
