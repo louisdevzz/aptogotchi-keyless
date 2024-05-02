@@ -72,6 +72,7 @@ export function Details() {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(owner);
+    toast.success("Owner address copied to clipboard!");
   };
 
   const nameField = (
