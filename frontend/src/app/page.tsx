@@ -4,7 +4,7 @@ import ClientOnly from "@/components/ClientOnly";
 
 export default function Home() {
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen overflow-hidden">
       <div className="md:w-[1200px] md:h-[800px] m-auto border-4 border-black border-solid">
         <Header />
         <Body />

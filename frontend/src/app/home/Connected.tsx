@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { Pet } from "./Pet";
 import { Mint } from "./Mint";
 import { NEXT_PUBLIC_CONTRACT_ADDRESS } from "@/utils/env";
@@ -14,8 +14,13 @@ export function Connected() {
   const { pet, setPet } = usePet();
   const { keylessAccount } = useKeylessAccount();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+
   const fetchPet = useCallback(async () => {
     if (!keylessAccount?.accountAddress) return;
+
+    setIsLoading(true);
 
     const hasPet = await aptosClient.view({
       payload: {
@@ -45,6 +50,8 @@ export function Connected() {
         });
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   }, [keylessAccount?.accountAddress]);
@@ -55,9 +62,33 @@ export function Connected() {
     fetchPet();
   }, [keylessAccount?.accountAddress, fetchPet]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((currentProgress) => {
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return currentProgress + 1;
+      });
+    }, 10);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="flex flex-col gap-3 p-3">
-      {pet ? <Pet /> : <Mint fetchPet={fetchPet} />}
+    <div className="flex flex-col gap-3 p-3 justify-center items-center">
+      {isLoading ? (
+        <progress
+          className="nes-progress is-primary"
+          value={progress}
+          max="100"
+        ></progress>
+      ) : pet ? (
+        <Pet />
+      ) : (
+        <Mint fetchPet={fetchPet} />
+      )}
     </div>
   );
 }
