@@ -51,7 +51,7 @@ export default function WalletButtons() {
 
   if (keylessAccount) {
     return (
-      <div className="flex items-center justify-center px-4">
+      <div className="flex items-center justify-center m-auto sm:m-0 sm:px-4">
         <button
           className={buttonStyles}
           onClick={disconnect}
@@ -67,7 +67,7 @@ export default function WalletButtons() {
   }
 
   return (
-    <div className="flex items-center justify-center px-4">
+    <div className="flex items-center justify-center m-auto sm:m-0 sm:px-4">
       <a href={redirectUrl.toString()} className="hover:no-underline">
         <button className={buttonStyles}>
           <GoogleLogo />
