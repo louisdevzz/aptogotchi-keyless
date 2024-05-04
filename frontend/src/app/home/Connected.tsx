@@ -71,7 +71,7 @@ export function Connected() {
         }
         return currentProgress + 1;
       });
-    }, 10);
+    }, 25);
 
     return () => clearInterval(interval);
   }, []);
@@ -79,11 +79,14 @@ export function Connected() {
   return (
     <div className="flex flex-col gap-3 p-3 justify-center items-center">
       {isLoading ? (
-        <progress
-          className="nes-progress is-primary"
-          value={progress}
-          max="100"
-        ></progress>
+        <div className="nes-container with-title">
+          <p className="title">Loading...</p>
+          <progress
+            className="nes-progress is-primary"
+            value={progress}
+            max="100"
+          ></progress>
+        </div>
       ) : pet ? (
         <Pet />
       ) : (
