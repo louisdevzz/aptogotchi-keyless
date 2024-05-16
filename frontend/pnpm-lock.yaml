@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@aptos-labs/ts-sdk':
-    specifier: 1.13.3-zeta.0
-    version: 1.13.3-zeta.0
+    specifier: 1.13.3-zeta.3
+    version: 1.13.3-zeta.3
   '@emotion/react':
     specifier: ^11.11.4
     version: 11.11.4(@types/react@18.2.37)(react@18.2.0)
@@ -111,8 +111,8 @@ packages:
       - debug
     dev: false
 
-  /@aptos-labs/ts-sdk@1.13.3-zeta.0:
-    resolution: {integrity: sha512-Y81tEvkvan98i9K4v/3aK8CoEvIwvGOcKM0EjE413qKakStTNbUYj2WsNYrBD4eKrFM5ZZHQMJk58OzLpJzbgg==}
+  /@aptos-labs/ts-sdk@1.13.3-zeta.3:
+    resolution: {integrity: sha512-R2OT1t8hF25ixECKIiMDcEg8qWEnJ6rMs6u/4Qo9v4HJ7wbdoPUouNv5G9BldSNJF5Tlrgwd/KI8iDd2qI9h2g==}
     engines: {node: '>=11.0.0'}
     dependencies:
       '@aptos-labs/aptos-cli': 0.1.2
