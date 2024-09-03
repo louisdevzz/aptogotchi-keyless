@@ -13,7 +13,7 @@ out
 # next.js
 /.next/
 /out/
-/frontend/.next
+/.next/
 
 # production
 /build
